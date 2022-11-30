@@ -64,7 +64,7 @@ jobs:
     steps:
       - id: setup
         name: Setup
-        uses: scientist-softserv/actions/setup-env@main
+        uses: glass-canvas/actions/setup-env@main
         with:
           tag: ${{ inputs.tag }}
       - name: Checkout code
