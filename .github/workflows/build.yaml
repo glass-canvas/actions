@@ -15,8 +15,6 @@ on:
         type: string
       registry_user:
         type: string
-      registry_password:
-        type: string
       subdir:
         default: '.'
         type: string
@@ -107,7 +105,7 @@ jobs:
         with:
           registry: ${{ env.REGISTRY }}
           username: ${{ inputs.registry_user || github.actor }}
-          password: ${{ inputs.registry_password || secrets.GITHUB_TOKEN }}
+          password: ${{ secrets.REGISTRY_PASSWORD || secrets.GITHUB_TOKEN }}
       - name: Build and push web
         uses: docker/build-push-action@v3
         with:

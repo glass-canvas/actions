@@ -14,8 +14,6 @@ on:
         description: "Docker image registry part. Defaults to ghcr.io"
       registry_user:
         type: string
-      registry_password:
-        type: string
       subdir:
         default: '.'
         type: string
@@ -42,8 +40,6 @@ on:
         type: string
         description: "Docker image registry part. Defaults to ghcr.io"
       registry_user:
-        type: string
-      registry_password:
         type: string
       subdir:
         default: '.'
@@ -95,7 +91,7 @@ jobs:
         with:
           registry: ${{ env.REGISTRY }}
           username: ${{ inputs.registry_user || github.actor }}
-          password: ${{ inputs.registry_password || secrets.GITHUB_TOKEN }}
+          password: ${{ secrets.REGISTRY_PASSWORD || secrets.GITHUB_TOKEN }}
       - name: Setup tmate session
         uses: mxschmitt/action-tmate@v3
         if: ${{ github.event_name == 'workflow_dispatch' && inputs.debug_enabled }}
