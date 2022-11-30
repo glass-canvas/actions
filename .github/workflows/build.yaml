@@ -114,7 +114,11 @@ jobs:
       - name: Build and push web
         uses: docker/build-push-action@v3
         with:
-          build-args: DEPLOY_KEY=${{ secrets.DEPLOY_KEY }}
+          build-args: |
+            "APP_PATH=${{ inputs.subdir }}"
+            "APP_NAME=${{ inputs.app_name }}"
+            "BRANCH=${{ env.TAG }}"
+            "DEPLOY_KEY=${{ secrets.DEPLOY_KEY }}"
           cache-from: type=registry,ref=${{ env.REGISTRY }}/${{ env.REPO_LOWER }}:${{ env.TAG }}
           context: .
           file: ${{ inputs.subdir}}/Dockerfile
