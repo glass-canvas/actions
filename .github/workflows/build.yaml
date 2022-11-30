@@ -111,8 +111,8 @@ jobs:
         if: ${{ github.event_name == 'workflow_dispatch' && inputs.debug_enabled }}
         with:
           limit-access-to-actor: true
-        environment: |
-          DEPLOY_KEY=${{ secrets.DEPLOY_KEY }}
+        env:
+          DEPLOY_KEY: ${{ secrets.DEPLOY_KEY }}
       - name: Build and push web
         uses: docker/build-push-action@v3
         with:
