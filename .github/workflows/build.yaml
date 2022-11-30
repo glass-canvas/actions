@@ -37,6 +37,7 @@ on:
 
 env:
   REGISTRY: ${{ inputs.image_registry || 'ghcr.io' }}
+  DEPLOY_KEY: ${{ secrets.DEPLOY_KEY }}
 
 jobs:
   build:
@@ -111,8 +112,6 @@ jobs:
         if: ${{ github.event_name == 'workflow_dispatch' && inputs.debug_enabled }}
         with:
           limit-access-to-actor: true
-        env:
-          DEPLOY_KEY: ${{ secrets.DEPLOY_KEY }}
       - name: Build and push web
         uses: docker/build-push-action@v3
         with:
@@ -120,7 +119,7 @@ jobs:
             APP_PATH=${{ inputs.subdir }}
             APP_NAME=${{ inputs.app_name }}
             BRANCH=${{ env.TAG }}
-            DEPLOY_KEY=${{ secrets.DEPLOY_KEY }}
+            DEPLOY_KEY=${{ env.DEPLOY_KEY }}
           cache-from: type=registry,ref=${{ env.REGISTRY }}/${{ env.REPO_LOWER }}:${{ env.TAG }}
           context: .
           file: ${{ inputs.subdir}}/Dockerfile
