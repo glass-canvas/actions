@@ -37,7 +37,6 @@ on:
 
 env:
   REGISTRY: ${{ inputs.image_registry || 'ghcr.io' }}
-  DEPLOY_KEY: ${{ secrets.DEPLOY_KEY }}
 
 jobs:
   build:
@@ -116,12 +115,11 @@ jobs:
         uses: docker/build-push-action@v3
         with:
           build-args: |
+            GITHUB_TOKEN=${{ secrets.GITHUB_TOKEN }}
             APP_PATH=${{ inputs.subdir }}
             APP_NAME=${{ inputs.app_name }}
             BRANCH=${{ env.TAG }}
-            "DEPLOY_KEY=${{ env.DEPLOY_KEY }}"
-          secrets: |
-            "DEPLOY_TOKEN=${{ secrets.DEPLOY_KEY }}"
+            "DEPLOY_KEY=${{ secrets.DEPLOY_KEY }}"
           cache-from: type=registry,ref=${{ env.REGISTRY }}/${{ env.REPO_LOWER }}:${{ env.TAG }}
           context: .
           file: ${{ inputs.subdir}}/Dockerfile
@@ -139,7 +137,7 @@ jobs:
             APP_PATH=${{ inputs.subdir }}
             APP_NAME=${{ inputs.app_name }}
             BRANCH=${{ env.TAG }}
-            DEPLOY_KEY=${{ secrets.DEPLOY_KEY }}
+            "DEPLOY_KEY=${{ secrets.DEPLOY_KEY }}"
           cache-from: type=registry,ref=${{ env.REGISTRY }}/${{ env.REPO_LOWER }}/worker:${{ env.TAG }}
           context: .
           file: ${{ inputs.subdir}}/Dockerfile
