@@ -62,15 +62,15 @@ jobs:
   test:
     runs-on: self-hosted
     strategy:
-      fail-fast: false
-      matrix:
-        # Set N number of parallel jobs you want to run tests on.
-        # Use higher number if you have slow tests to split them on more parallel jobs.
-        # Remember to update ci_node_index below to 0..N-1
-        ci_node_total: [1]
-        # set N-1 indexes for parallel jobs
-        # When you run 2 parallel jobs then first job will have index 0, the second job will have index 1 etc
-        ci_node_index: [0, 1, 2]
+      fail-fast: true
+      # matrix:
+      #   # Set N number of parallel jobs you want to run tests on.
+      #   # Use higher number if you have slow tests to split them on more parallel jobs.
+      #   # Remember to update ci_node_index below to 0..N-1
+      #   ci_node_total: [1]
+      #   # set N-1 indexes for parallel jobs
+      #   # When you run 2 parallel jobs then first job will have index 0, the second job will have index 1 etc
+      #   ci_node_index: [0, 1, 2]
     env:
       ALLOW_ANONYMOUS_LOGIN: "yes"
       CONFDIR: ${{ inputs.confdir }}
@@ -143,8 +143,8 @@ jobs:
           cd ${{ inputs.subdir }};
           docker-compose exec -T web sh -c
           "${{ inputs.rspec_cmd }}"
-      - name: Publish Test Report
-        uses: mikepenz/action-junit-report@v3
-        if: always() # always run even if the previous step fails
-        with:
-          report_paths: 'rspec*.xml'
+      # - name: Publish Test Report
+      #   uses: mikepenz/action-junit-report@v3
+      #   if: always() # always run even if the previous step fails
+      #   with:
+      #     report_paths: 'rspec*.xml'
