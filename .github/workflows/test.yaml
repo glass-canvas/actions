@@ -130,8 +130,8 @@ jobs:
         run: >-
           cd ${{ inputs.subdir }};
           docker-compose exec -T web sh -c
-          "mysql -p$MYSQL_PASSWORD -uroot -h $MYSQL_HOST -e \"create database $TEST_DB;\";
-          mysql -p$MYSQL_PASSWORD -uroot -h $MYSQL_HOST -e \"use $TEST_DB; GRANT ALL PRIVILEGES ON *.* TO '$MYSQL_USER'@'%'; FLUSH PRIVILEGES;\";
+          "mysql -p\$MYSQL_PASSWORD -uroot -h \$MYSQL_HOST -e \"create database \$TEST_DB;\";
+          mysql -p\$MYSQL_PASSWORD -uroot -h \$MYSQL_HOST -e \"use \$TEST_DB; GRANT ALL PRIVILEGES ON *.* TO '\$MYSQL_USER'@'%'; FLUSH PRIVILEGES;\";
           RAILS_ENV=test bundle exec rake db:schema:load db:migrate"
       - name: Run Specs
         env:
