@@ -26,7 +26,9 @@ env:
 jobs:
   deploy:
     runs-on: self-hosted
-    container: kiwigrid/gcloud-kubectl-helm:3.3.4-312.0.0-267
+    container:
+      image: kiwigrid/gcloud-kubectl-helm:3.3.4-312.0.0-267
+      options: --user root
     environment: ${{ inputs.environment }}
     env:
       KUBECONFIG_FILE: ${{ secrets.KUBECONFIG_FILE }}
