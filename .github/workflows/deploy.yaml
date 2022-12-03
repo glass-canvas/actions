@@ -46,7 +46,7 @@ jobs:
         with:
           limit-access-to-actor: true
       - name: Install gpg
-        run: apk add gpg
+        run: apk add gpg gpg-agent
       - name: Import GPG key
         id: import_gpg
         uses: crazy-max/ghaction-import-gpg@v5
