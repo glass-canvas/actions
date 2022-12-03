@@ -103,6 +103,8 @@ jobs:
           echo $ENV_DEVELOPMENT | base64 -d > .env.development;
           touch .env;
           docker-compose pull web
+        env:
+          ENV_DEVELOPMENT: ${{ secrets.ENV_DEVELOPMENT }}
       - name: Pull worker image to prevent build
         if: ${{ inputs.worker }}
         run: >-
