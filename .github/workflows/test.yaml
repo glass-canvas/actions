@@ -146,6 +146,7 @@ jobs:
         # continue-on-error: true
         run: >-
           cd ${{ inputs.subdir }};
+          GITHUB_TOKEN=${{ secrets.GITHUB_TOKEN }}
           docker-compose exec -T web sh -c
           "${{ inputs.rspec_cmd }}"
       # - name: Publish Test Report
