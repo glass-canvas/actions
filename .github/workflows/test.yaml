@@ -128,7 +128,7 @@ jobs:
         uses: mxschmitt/action-tmate@v3
         if: ${{ github.event_name == 'workflow_dispatch' && inputs.debug_enabled }}
         env:
-          GITHUB_TOKEN=${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           limit-access-to-actor: true
       - name: Setup db
@@ -145,10 +145,10 @@ jobs:
           CI_NODE_TOTAL: ${{ matrix.ci_node_total }}
           # Use the index from matrix as an environment variable
           CI_NODE_INDEX: ${{ matrix.ci_node_index }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         # continue-on-error: true
         run: >-
           cd ${{ inputs.subdir }};
-          GITHUB_TOKEN=${{ secrets.GITHUB_TOKEN }}
           docker-compose exec -T web sh -c
           "${{ inputs.rspec_cmd }}"
       # - name: Publish Test Report
