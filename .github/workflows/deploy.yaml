@@ -36,7 +36,7 @@ jobs:
     steps:
       - id: setup
         name: Setup
-        uses: glass-canvas/actions/setup-env@fotf
+        uses: glass-canvas/actions/setup-env@main
         with:
           tag: ${{ inputs.tag }}
           image_name: ${{ inputs.image_name }}
