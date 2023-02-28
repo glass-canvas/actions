@@ -29,6 +29,9 @@ on:
         description: "Use if you need to build a specific Solr image and push to the registry"
         required: false
         type: boolean
+      solrTarget:
+        required: false
+        type: string
       tag:
         required: false
         type: string
@@ -145,7 +148,7 @@ jobs:
           tags: |
             ${{ steps.meta-base.outputs.tags }}
             ${{ env.REGISTRY }}/${{ env.REPO_LOWER }}/base:${{ env.TAG }}
-          target: ${{ inputs.target }}
+          target: ${{ inputs.baseTarget }}
       - name: Build and push web
         uses: docker/build-push-action@v3
         with:
@@ -194,4 +197,4 @@ jobs:
           tags: |
             ${{ steps.meta-solr.outputs.tags }}
             ${{ env.REGISTRY }}/${{ env.REPO_LOWER }}/solr:${{ env.TAG }}
-          target: ${{ inputs.target }}
+          target: ${{ inputs.solrTarget }}
