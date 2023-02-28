@@ -75,6 +75,7 @@ jobs:
           touch .env;
           TAG=latest docker-compose pull web || true
       - name: Retag action for base
+        if: ${{ inputs.base }}
         id: meta-base
         uses: docker/metadata-action@v4.1.1
         with:
@@ -120,6 +121,7 @@ jobs:
         with:
           limit-access-to-actor: true
       - name: Build and push base
+        if: ${{ inputs.base }}
         uses: docker/build-push-action@v3
         with:
           build-args: |
