@@ -35,7 +35,11 @@ on:
       tag:
         required: false
         type: string
-      target:
+      web:
+        description: "Use if you need to build a web image and push to the registry"
+        required: false
+        type: boolean
+      webTarget:
         required: false
         type: string
       worker:
@@ -78,12 +82,34 @@ jobs:
           builder: ${{ steps.builder.outputs.name }}
           endpoint: "ssh://ec2-user@18.246.29.3"
           ssh_private_key: ${{ secrets.SSH_BESTIE_BUILDER_PRIVATE_KEY }}
-      - name: Pull from cache to speed up build
+      - name: Pull web from cache to speed up build
+        if: ${{ inputs.web }}
         run: >-
           cd ${{ inputs.subdir }};
           touch .env.development;
           touch .env;
           TAG=latest docker-compose pull web || true
+      - name: Pull base from cache to speed up build
+        if: ${{ inputs.base }}
+        run: >-
+          cd ${{ inputs.subdir }};
+          touch .env.development;
+          touch .env;
+          TAG=latest docker-compose pull base || true
+      - name: Pull worker from cache to speed up build
+        if: ${{ inputs.worker }}
+        run: >-
+          cd ${{ inputs.subdir }};
+          touch .env.development;
+          touch .env;
+          TAG=latest docker-compose pull worker || true
+      - name: Pull solr from cache to speed up build
+        if: ${{ inputs.solr }}
+        run: >-
+          cd ${{ inputs.subdir }};
+          touch .env.development;
+          touch .env;
+          TAG=latest docker-compose pull solr || true
       - name: Retag action for base
         if: ${{ inputs.base }}
         id: meta-base
@@ -94,6 +120,7 @@ jobs:
           tags: |
             type=raw,value=latest,enable={{is_default_branch}}
       - name: Retag action for web
+        if: ${{ inputs.web }}
         id: meta-web
         uses: docker/metadata-action@v4.1.1
         with:
@@ -150,6 +177,7 @@ jobs:
             ${{ env.REGISTRY }}/${{ env.REPO_LOWER }}/base:${{ env.TAG }}
           target: ${{ inputs.baseTarget }}
       - name: Build and push web
+        if: ${{ inputs.web }}
         uses: docker/build-push-action@v3
         with:
           build-args: |
@@ -166,7 +194,7 @@ jobs:
           tags: |
             ${{ steps.meta-web.outputs.tags }}
             ${{ env.REGISTRY }}/${{ env.REPO_LOWER }}:${{ env.TAG }}
-          target: ${{ inputs.target }}
+          target: ${{ inputs.webTarget }}
       - name: Build and push worker
         if: ${{ inputs.worker }}
         uses: docker/build-push-action@v3
