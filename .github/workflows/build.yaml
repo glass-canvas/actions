@@ -4,10 +4,6 @@ on:
     inputs:
       app_name:
         type: string
-      base:
-        description: "Use if you need to build a base image and push to the registry"
-        required: false
-        type: boolean
       baseTarget:
         required: false
         type: string
@@ -25,26 +21,15 @@ on:
       subdir:
         default: '.'
         type: string
-      solr:
-        description: "Use if you need to build a specific Solr image and push to the registry"
-        required: false
-        type: boolean
       solrTarget:
         required: false
         type: string
       tag:
         required: false
         type: string
-      web:
-        description: "Use if you need to build a web image and push to the registry"
-        required: false
-        type: boolean
       webTarget:
         required: false
         type: string
-      worker:
-        required: false
-        type: boolean
       workerTarget:
         required: false
         type: string
@@ -83,35 +68,35 @@ jobs:
           endpoint: "ssh://ec2-user@18.246.29.3"
           ssh_private_key: ${{ secrets.SSH_BESTIE_BUILDER_PRIVATE_KEY }}
       - name: Pull web from cache to speed up build
-        if: ${{ inputs.web }}
+        if: ${{ inputs.webTarget != '' }}
         run: >-
           cd ${{ inputs.subdir }};
           touch .env.development;
           touch .env;
           TAG=latest docker-compose pull web || true
       - name: Pull base from cache to speed up build
-        if: ${{ inputs.base }}
+        if: ${{ inputs.baseTarget != '' }}
         run: >-
           cd ${{ inputs.subdir }};
           touch .env.development;
           touch .env;
           TAG=latest docker-compose pull base || true
       - name: Pull worker from cache to speed up build
-        if: ${{ inputs.worker }}
+        if: ${{ inputs.workerTarget != '' }}
         run: >-
           cd ${{ inputs.subdir }};
           touch .env.development;
           touch .env;
           TAG=latest docker-compose pull worker || true
       - name: Pull solr from cache to speed up build
-        if: ${{ inputs.solr }}
+        if: ${{ inputs.solrTarget != '' }}
         run: >-
           cd ${{ inputs.subdir }};
           touch .env.development;
           touch .env;
           TAG=latest docker-compose pull solr || true
       - name: Retag action for base
-        if: ${{ inputs.base }}
+        if: ${{ inputs.baseTarget != '' }}
         id: meta-base
         uses: docker/metadata-action@v4.1.1
         with:
@@ -120,7 +105,7 @@ jobs:
           tags: |
             type=raw,value=latest,enable={{is_default_branch}}
       - name: Retag action for web
-        if: ${{ inputs.web }}
+        if: ${{ inputs.webTarget != '' }}
         id: meta-web
         uses: docker/metadata-action@v4.1.1
         with:
@@ -129,7 +114,7 @@ jobs:
           tags: |
             type=raw,value=latest,enable={{is_default_branch}}
       - name: Retag action for worker
-        if: ${{ inputs.worker }}
+        if: ${{ inputs.workerTarget != '' }}
         id: meta-worker
         uses: docker/metadata-action@v4.1.1
         with:
@@ -138,7 +123,7 @@ jobs:
           tags: |
             type=raw,value=latest,enable={{is_default_branch}}
       - name: Retag action for solr
-        if: ${{ inputs.solr }}
+        if: ${{ inputs.solrTarget != '' }}
         id: meta-solr
         uses: docker/metadata-action@v4.1.1
         with:
@@ -158,7 +143,7 @@ jobs:
         with:
           limit-access-to-actor: true
       - name: Build and push base
-        if: ${{ inputs.base }}
+        if: ${{ inputs.baseTarget != '' }}
         uses: docker/build-push-action@v3
         with:
           build-args: |
@@ -177,7 +162,7 @@ jobs:
             ${{ env.REGISTRY }}/${{ env.REPO_LOWER }}/base:${{ env.TAG }}
           target: ${{ inputs.baseTarget }}
       - name: Build and push web
-        if: ${{ inputs.web }}
+        if: ${{ inputs.webTarget != '' }}
         uses: docker/build-push-action@v3
         with:
           build-args: |
@@ -196,7 +181,7 @@ jobs:
             ${{ env.REGISTRY }}/${{ env.REPO_LOWER }}:${{ env.TAG }}
           target: ${{ inputs.webTarget }}
       - name: Build and push worker
-        if: ${{ inputs.worker }}
+        if: ${{ inputs.workerTarget != '' }}
         uses: docker/build-push-action@v3
         with:
           build-args: |
@@ -215,7 +200,7 @@ jobs:
             ${{ env.REGISTRY }}/${{ env.REPO_LOWER }}/worker:${{ env.TAG }}
           target: ${{ inputs.workerTarget }}
       - name: Build and push solr
-        if: ${{ inputs.solr }}
+        if: ${{ inputs.solrTarget != '' }}
         uses: docker/build-push-action@v3
         with:
           cache-from: type=registry,ref=${{ env.REGISTRY }}/${{ env.REPO_LOWER }}/solr:${{ env.TAG }}
