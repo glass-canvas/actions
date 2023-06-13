@@ -23,11 +23,13 @@ on:
       rspec_cmd:
         required: false
         type: string
-        default: "gem install semaphore_test_boosters && rspec_booster --job $CI_NODE_INDEX/$CI_NODE_TOTAL"
+        default: "cd /home/app/webapp && yarn && ../tools/r/spec ."
       setup_db_cmd:
         required: false
         type: string
-        default: "RAILS_ENV=test bundle exec rake db:create db:schema:load db:migrate"
+        default: "mysql -p\$MYSQL_PASSWORD -uroot -h \$MYSQL_HOST -e \"create database \$TEST_DB;\";
+          mysql -p\$MYSQL_PASSWORD -uroot -h \$MYSQL_HOST -e \"use \$TEST_DB; GRANT ALL PRIVILEGES ON *.* TO '\$MYSQL_USER'@'%'; FLUSH PRIVILEGES;\";
+          RAILS_ENV=test bundle exec rake db:schema:load db:migrate"
       worker:
         required: false
         type: boolean
@@ -54,11 +56,13 @@ on:
       rspec_cmd:
         required: false
         type: string
-        default: "gem install semaphore_test_boosters && rspec_booster --job $CI_NODE_INDEX/$CI_NODE_TOTAL"
+        default: "cd /home/app/webapp && yarn && ../tools/r/spec ."
       setup_db_cmd:
         required: false
         type: string
-        default: "RAILS_ENV=test bundle exec rake db:create db:schema:load db:migrate"
+        default: "mysql -p\$MYSQL_PASSWORD -uroot -h \$MYSQL_HOST -e \"create database \$TEST_DB;\";
+          mysql -p\$MYSQL_PASSWORD -uroot -h \$MYSQL_HOST -e \"use \$TEST_DB; GRANT ALL PRIVILEGES ON *.* TO '\$MYSQL_USER'@'%'; FLUSH PRIVILEGES;\";
+          RAILS_ENV=test bundle exec rake db:schema:load db:migrate"
       worker:
         required: false
         type: boolean
