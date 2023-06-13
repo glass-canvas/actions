@@ -23,14 +23,11 @@ on:
       rspec_cmd:
         required: false
         type: string
-        default: "cd /home/app/webapp && yarn && ../tools/r/spec ."
+        default: "yarn && ../tools/r/spec ."
       setup_db_cmd:
         required: false
         type: string
-        default: |
-          mysql -p"$MYSQL_PASSWORD" -uroot -h "$MYSQL_HOST" -e "create database $TEST_DB;"
-          mysql -p"$MYSQL_PASSWORD" -uroot -h "$MYSQL_HOST" -e "use $TEST_DB; GRANT ALL PRIVILEGES ON *.* TO '$MYSQL_USER'@'%'; FLUSH PRIVILEGES;"
-          RAILS_ENV=test bundle exec rake db:schema:load db:migrate
+        default: "RAILS_ENV=test bundle exec rake db:schema:load db:migrate"
       worker:
         required: false
         type: boolean
@@ -57,14 +54,11 @@ on:
       rspec_cmd:
         required: false
         type: string
-        default: "cd /home/app/webapp && yarn && ../tools/r/spec ."
+        default: "yarn && ../tools/r/spec ."
       setup_db_cmd:
         required: false
         type: string
-        default: |
-          mysql -p"$MYSQL_PASSWORD" -uroot -h "$MYSQL_HOST" -e "create database $TEST_DB;"
-          mysql -p"$MYSQL_PASSWORD" -uroot -h "$MYSQL_HOST" -e "use $TEST_DB; GRANT ALL PRIVILEGES ON *.* TO '$MYSQL_USER'@'%'; FLUSH PRIVILEGES;"
-          RAILS_ENV=test bundle exec rake db:schema:load db:migrate
+        default: "RAILS_ENV=test bundle exec rake db:schema:load db:migrate"
       worker:
         required: false
         type: boolean
@@ -149,6 +143,8 @@ jobs:
       - name: Run Specs
         id: run-specs
         env:
+          # This is needed to pass to the .npmrc file when we run yarn
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           # Specifies how many jobs you would like to run in parallel,
           # used for partitioning
           CI_NODE_TOTAL: ${{ matrix.ci_node_total }}
