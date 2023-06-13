@@ -30,3 +30,8 @@ runs:
       uses: KengoTODA/actions-setup-docker-compose@main
       with:
         version: '2.12.2'
+    - name: Checkout code
+      uses: actions/checkout@v3
+      with:
+        submodules: true
+        token: ${{ inputs.token }}
