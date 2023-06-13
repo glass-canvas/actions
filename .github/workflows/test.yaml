@@ -61,9 +61,10 @@ on:
       setup_db_cmd:
         required: false
         type: string
-        default: "mysql -p\$MYSQL_PASSWORD -uroot -h \$MYSQL_HOST -e \"create database \$TEST_DB;\";
-          mysql -p\$MYSQL_PASSWORD -uroot -h \$MYSQL_HOST -e \"use \$TEST_DB; GRANT ALL PRIVILEGES ON *.* TO '\$MYSQL_USER'@'%'; FLUSH PRIVILEGES;\";
-          RAILS_ENV=test bundle exec rake db:schema:load db:migrate"
+        default: |
+          mysql -p"$MYSQL_PASSWORD" -uroot -h "$MYSQL_HOST" -e "create database $TEST_DB;"
+          mysql -p"$MYSQL_PASSWORD" -uroot -h "$MYSQL_HOST" -e "use $TEST_DB; GRANT ALL PRIVILEGES ON *.* TO '$MYSQL_USER'@'%'; FLUSH PRIVILEGES;"
+          RAILS_ENV=test bundle exec rake db:schema:load db:migrate
       worker:
         required: false
         type: boolean
