@@ -155,6 +155,7 @@ jobs:
         run: npm rebuild && npm run prepare --if-present
       - name: Run Specs
         id: run-specs
+        env:
           # Specifies how many jobs you would like to run in parallel,
           # used for partitioning
           CI_NODE_TOTAL: ${{ matrix.ci_node_total }}
