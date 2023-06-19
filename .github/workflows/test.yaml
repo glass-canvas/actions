@@ -146,6 +146,7 @@ jobs:
           # Use the index from matrix as an environment variable
           CI_NODE_INDEX: ${{ matrix.ci_node_index }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          DEPLOY_KEY: ${{ secrets.DEPLOY_KEY }}"
         # continue-on-error: true
         run: >-
           cd ${{ inputs.subdir }};
