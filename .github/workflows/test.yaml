@@ -85,6 +85,17 @@ jobs:
       DB_CLEANER_ALLOW_REMOTE_DB_URL: "true"
       TB_RSPEC_FORMATTER: progress
       TB_RSPEC_OPTIONS: --format RspecJunitFormatter --out rspec.xml
+      RAILS_ENV: test
+      PASSENGER_APP_ENV: test
+      DISABLE_DATABASE_ENVIRONMENT_CHECK: 1
+      MYSQL_ALLOW_EMPTY_PASSWORD: 1
+      IN_DOCKER: 1
+      DB_ADAPTER: mysql2
+      MYSQL_HOST: mysql
+      MYSQL_USER: tilma
+      MYSQL_PASSWORD: testing123
+      MYSQL_DATABASE: tilmaci
+      TEST_DB: tilmaci
     steps:
       - id: setup
         name: Setup
