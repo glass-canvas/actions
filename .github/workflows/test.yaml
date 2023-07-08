@@ -23,11 +23,7 @@ on:
       rspec_cmd:
         required: false
         type: string
-        default: "yarn && ../tools/r/spec ."
-      setup_db_cmd:
-        required: false
-        type: string
-        default: "RAILS_ENV=test bundle exec rake db:schema:load db:migrate"
+        default: "gem install semaphore_test_boosters && rspec_booster --job $CI_NODE_INDEX/$CI_NODE_TOTAL"
       worker:
         required: false
         type: boolean
@@ -54,11 +50,7 @@ on:
       rspec_cmd:
         required: false
         type: string
-        default: "yarn && ../tools/r/spec ."
-      setup_db_cmd:
-        required: false
-        type: string
-        default: "RAILS_ENV=test bundle exec rake db:schema:load db:migrate"
+        default: "gem install semaphore_test_boosters && rspec_booster --job $CI_NODE_INDEX/$CI_NODE_TOTAL"
       worker:
         required: false
         type: boolean
@@ -72,38 +64,29 @@ jobs:
     strategy:
       fail-fast: true
       # matrix:
-        # # Set N number of parallel jobs you want to run tests on.
-        # # Use higher number if you have slow tests to split them on more parallel jobs.
-        # # Remember to update ci_node_index below to 0..N-1
-        # ci_node_total: [3]
-        # # set N-1 indexes for parallel jobs
-        # # When you run 2 parallel jobs then first job will have index 0, the second job will have index 1 etc
-        # ci_node_index: [0, 1, 2]
+      #   # Set N number of parallel jobs you want to run tests on.
+      #   # Use higher number if you have slow tests to split them on more parallel jobs.
+      #   # Remember to update ci_node_index below to 0..N-1
+      #   ci_node_total: [1]
+      #   # set N-1 indexes for parallel jobs
+      #   # When you run 2 parallel jobs then first job will have index 0, the second job will have index 1 etc
+      #   ci_node_index: [0, 1, 2]
     env:
       ALLOW_ANONYMOUS_LOGIN: "yes"
       CONFDIR: ${{ inputs.confdir }}
       DB_CLEANER_ALLOW_REMOTE_DB_URL: "true"
       TB_RSPEC_FORMATTER: progress
       TB_RSPEC_OPTIONS: --format RspecJunitFormatter --out rspec.xml
-      RAILS_ENV: test
-      PASSENGER_APP_ENV: test
-      DISABLE_DATABASE_ENVIRONMENT_CHECK: 1
-      MYSQL_ALLOW_EMPTY_PASSWORD: 1
-      IN_DOCKER: 1
-      DB_ADAPTER: mysql2
-      MYSQL_HOST: mysql
-      MYSQL_USER: tilma
-      MYSQL_PASSWORD: testing123
-      MYSQL_DATABASE: tilmaci
-      TEST_DB: tilmaci
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
       - id: setup
         name: Setup
-        uses: glass-canvas/actions/setup-env@i3-troubleshoot-ci
+        uses: glass-canvas/actions/setup-env@main
         with:
           tag: ${{ inputs.tag }}
           image_name: ${{ inputs.image_name }}
-          token: ${{ secrets.CHECKOUT_TOKEN || secrets.GITHUB_TOKEN }}
+      - name: Checkout code
+        uses: actions/checkout@v3
       - name: Login to GitHub Container Registry
         uses: docker/login-action@v2
         with:
@@ -144,34 +127,26 @@ jobs:
       - name: Setup tmate session
         uses: mxschmitt/action-tmate@v3
         if: ${{ github.event_name == 'workflow_dispatch' && inputs.debug_enabled }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           limit-access-to-actor: true
       - name: Setup db
         run: >-
           cd ${{ inputs.subdir }};
-          docker-compose exec -T web sh -c
-          "${{ inputs.setup_db_cmd }}"
-      - name: Setup node and npm
-        # https://github.com/actions/setup-node/issues/49#issuecomment-1293249466
-        uses: actions/setup-node@v3
-        with:
-          node-version: 16
-          cache: npm
-          registry-url: "https://npm.pkg.github.com"
-      - name: Install npm dependencies
-        run: npm ci --ignore-scripts
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      - name: Run post-install scripts
-        run: npm rebuild && npm run prepare --if-present
+          docker-compose exec -T web sh -c \
+          "mysql -p\$MYSQL_PASSWORD -uroot -h \$MYSQL_HOST -e \"create database \$TEST_DB;\";
+          mysql -p\$MYSQL_PASSWORD -uroot -h \$MYSQL_HOST -e \"use \$TEST_DB; GRANT ALL PRIVILEGES ON *.* TO '\$MYSQL_USER'@'%'; FLUSH PRIVILEGES;\";
+          RAILS_ENV=test bundle exec rake db:schema:load db:migrate"
       - name: Run Specs
-        id: run-specs
         env:
           # Specifies how many jobs you would like to run in parallel,
           # used for partitioning
           CI_NODE_TOTAL: ${{ matrix.ci_node_total }}
           # Use the index from matrix as an environment variable
           CI_NODE_INDEX: ${{ matrix.ci_node_index }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          DEPLOY_KEY: ${{ secrets.DEPLOY_KEY }}
         continue-on-error: true
         run: >-
           cd ${{ inputs.subdir }};
