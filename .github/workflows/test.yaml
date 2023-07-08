@@ -78,6 +78,7 @@ jobs:
       TB_RSPEC_FORMATTER: progress
       TB_RSPEC_OPTIONS: --format RspecJunitFormatter --out rspec.xml
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      DEPLOY_KEY: ${{ secrets.DEPLOY_KEY }}
     steps:
       - id: setup
         name: Setup
@@ -139,6 +140,7 @@ jobs:
           mysql -p\$MYSQL_PASSWORD -uroot -h \$MYSQL_HOST -e \"use \$TEST_DB; GRANT ALL PRIVILEGES ON *.* TO '\$MYSQL_USER'@'%'; FLUSH PRIVILEGES;\";
           RAILS_ENV=test bundle exec rake db:schema:load db:migrate"
       - name: Run Specs
+        id: run-specs
         env:
           # Specifies how many jobs you would like to run in parallel,
           # used for partitioning
