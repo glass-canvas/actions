@@ -78,7 +78,6 @@ jobs:
       TB_RSPEC_FORMATTER: progress
       TB_RSPEC_OPTIONS: --format RspecJunitFormatter --out rspec.xml
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      DEPLOY_KEY: ${{ secrets.DEPLOY_KEY }}
     steps:
       - id: setup
         name: Setup
@@ -125,13 +124,6 @@ jobs:
           else
             echo "No solr directory found, skipping..."
           fi
-      - name: Setup db
-        run: >-
-          cd ${{ inputs.subdir }};
-          docker-compose exec -T web sh -c \
-          "mysql -p\$MYSQL_PASSWORD -uroot -h \$MYSQL_HOST -e \"create database \$TEST_DB;\";
-          mysql -p\$MYSQL_PASSWORD -uroot -h \$MYSQL_HOST -e \"use \$TEST_DB; GRANT ALL PRIVILEGES ON *.* TO '\$MYSQL_USER'@'%'; FLUSH PRIVILEGES;\";
-          RAILS_ENV=test bundle exec rake db:schema:load db:migrate"
       - name: Setup tmate session
         uses: mxschmitt/action-tmate@v3
         if: ${{ github.event_name == 'workflow_dispatch' && inputs.debug_enabled }}
@@ -139,6 +131,13 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           limit-access-to-actor: true
+      - name: Setup db
+        run: >-
+          cd ${{ inputs.subdir }};
+          docker-compose exec -T web sh -c \
+          "mysql -p\$MYSQL_PASSWORD -uroot -h \$MYSQL_HOST -e \"create database \$TEST_DB;\";
+          mysql -p\$MYSQL_PASSWORD -uroot -h \$MYSQL_HOST -e \"use \$TEST_DB; GRANT ALL PRIVILEGES ON *.* TO '\$MYSQL_USER'@'%'; FLUSH PRIVILEGES;\";
+          RAILS_ENV=test bundle exec rake db:schema:load db:migrate"
       - name: Run Specs
         id: run-specs
         env:
@@ -152,7 +151,7 @@ jobs:
         continue-on-error: true
         run: >-
           cd ${{ inputs.subdir }};
-          docker-compose exec -T web sh -c \
+          docker-compose exec -T web sh -c
           "${{ inputs.rspec_cmd }}"
       - name: Fail job if spec failure
         run: if [[ ${{ steps.run-specs.outcome }} == "failure" ]]; then exit 1; else exit 0; fi
