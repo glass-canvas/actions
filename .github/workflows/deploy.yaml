@@ -3,7 +3,7 @@ on:
   workflow_call:
     inputs:
       environment:
-        type: string    
+        type: string
       image_name:
         type: string
         description: "Docker image name part. Fills in ghcr.io/IMAGE_NAME. Typically this is the `repo_name`, but in some projects it might be `repo_name/sub_name`"
@@ -34,7 +34,7 @@ jobs:
     env:
       KUBECONFIG_FILE: ${{ secrets.KUBECONFIG_FILE }}
       KUBECONFIG_FILE_NEW: ${{ secrets.KUBECONFIG_FILE_NEW }}
-      KUBECONFIG: /__w/tilma/tilma/kubeconfig.yml
+      KUBECONFIG: ./kubeconfig.yml
     steps:
       - id: setup
         name: Setup
