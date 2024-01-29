@@ -34,7 +34,7 @@ jobs:
     env:
       KUBECONFIG_FILE: ${{ secrets.KUBECONFIG_FILE }}
       KUBECONFIG_FILE_NEW: ${{ secrets.KUBECONFIG_FILE_NEW }}
-      KUBECONFIG: ./kubeconfig.yml
+      KUBECONFIG: ${{ github.workspace }}/kubeconfig.yml
     steps:
       - id: setup
         name: Setup
