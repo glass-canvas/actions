@@ -119,7 +119,7 @@ jobs:
             "APP_NAME=${{ inputs.app_name }}"
             "BRANCH=${{ env.TAG }}"
             "DEPLOY_KEY=${{ secrets.DEPLOY_KEY }}"
-            "GITHUB_TOKEN=${{ secrets.GITHUB_TOKEN }}"
+            "GITHUB_TOKEN=${{ secrets.PERSONAL_TOKEN || secrets.GITHUB_TOKEN }}"
           cache-from: type=registry,ref=${{ env.REGISTRY }}/${{ env.REPO_LOWER }}:${{ env.TAG }}
           context: .
           file: ${{ inputs.subdir}}/Dockerfile
