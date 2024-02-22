@@ -45,6 +45,12 @@ jobs:
           image_name: ${{ inputs.image_name }}
       - name: Checkout code
         uses: actions/checkout@v3
+      - name: Install 1password
+        run: |
+          echo https://downloads.1password.com/linux/alpinelinux/stable/ >> /etc/apk/repositories &&
+          wget https://downloads.1password.com/linux/keys/alpinelinux/support@1password.com-61ddfc31.rsa.pub -P /etc/apk/keys &&
+          apk update && 
+          apk add 1password-cli
       - name: Setup tmate session
         uses: mxschmitt/action-tmate@v3
         if: ${{ github.event_name == 'workflow_dispatch' && inputs.debug_enabled }}
