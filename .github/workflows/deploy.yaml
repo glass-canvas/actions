@@ -49,13 +49,9 @@ jobs:
         if: ${{ github.event_name == 'workflow_dispatch' && inputs.debug_enabled }}
         with:
           limit-access-to-actor: true
-      - name: Import GPG key
-        id: import_gpg
-        uses: crazy-max/ghaction-import-gpg@v5
+      - uses: 1password/load-secrets-action/configure@v1
         with:
-          gpg_private_key: ${{ secrets.GPG_PRIVATE_KEY }}
-      - name: Secrets
-        run: helm plugin install https://github.com/jkroepke/helm-secrets --version v4.1.1
+          service-account-token: ${{ secrets.OP_SERVICE_ACCOUNT_TOKEN }}
       - name: Do deploy
         run: |
           echo $KUBECONFIG_FILE | base64 -d > $KUBECONFIG;
