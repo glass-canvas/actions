@@ -44,14 +44,19 @@ jobs:
           image_name: ${{ inputs.image_name }}
       - name: Checkout code
         uses: actions/checkout@v3
+      - name: Configure 1Password Service Account
+        uses: 1password/load-secrets-action/configure@v1
+        with:
+          # Persist the 1Password Service Account Authorization token
+          # for next steps.
+          # Keep in mind that every single step in the job is now
+          # able to access the token.
+          service-account-token: ${{ secrets.OP_SERVICE_ACCOUNT_TOKEN }}
       - name: Setup tmate session
         uses: mxschmitt/action-tmate@v3
         if: ${{ github.event_name == 'workflow_dispatch' && inputs.debug_enabled }}
         with:
           limit-access-to-actor: true
-      - uses: 1password/load-secrets-action/configure@v1
-        with:
-          service-account-token: ${{ secrets.OP_SERVICE_ACCOUNT_TOKEN }}
       - name: Do deploy
         run: |
           echo $KUBECONFIG_FILE | base64 -d > $KUBECONFIG;
