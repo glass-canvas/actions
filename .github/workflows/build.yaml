@@ -49,9 +49,15 @@ jobs:
           tag: ${{ inputs.tag }}
           image_name: ${{ inputs.image_name }}
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           submodules: true
+      - name: Install 1password
+        run: |
+          echo https://downloads.1password.com/linux/alpinelinux/stable/ >> /etc/apk/repositories &&
+          wget https://downloads.1password.com/linux/keys/alpinelinux/support@1password.com-61ddfc31.rsa.pub -P /etc/apk/keys &&
+          apk update && 
+          apk add 1password-cli
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v2
       - name: Set up Docker Context for Buildx
@@ -111,12 +117,6 @@ jobs:
         if: ${{ github.event_name == 'workflow_dispatch' && inputs.debug_enabled }}
         with:
           limit-access-to-actor: true
-      - name: Install 1password
-        run: |
-          echo https://downloads.1password.com/linux/alpinelinux/stable/ >> /etc/apk/repositories &&
-          wget https://downloads.1password.com/linux/keys/alpinelinux/support@1password.com-61ddfc31.rsa.pub -P /etc/apk/keys &&
-          apk update && 
-          apk add 1password-cli
       - name: Build and push web
         uses: docker/build-push-action@v3
         with:
