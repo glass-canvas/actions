@@ -36,6 +36,7 @@ jobs:
       KUBECONFIG_FILE_NEW: ${{ secrets.KUBECONFIG_FILE_NEW }}
       KUBECONFIG: ${{ github.workspace }}/kubeconfig.yml
       OP_SERVICE_ACCOUNT_TOKEN: ${{ secrets.OP_SERVICE_ACCOUNT_TOKEN }}
+      NEW_STACK: ${{ secrets.NEW_STACK }}
     steps:
       - id: setup
         name: Setup
