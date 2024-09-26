@@ -106,31 +106,18 @@ jobs:
         run: >-
           cd ${{ inputs.subdir }};
           docker-compose pull worker
+      - name: Setup tmate session
+        uses: mxschmitt/action-tmate@v3
+        if: ${{ vars.TMATE == 'true' || (github.event_name == 'workflow_dispatch' && inputs.debug_enabled) }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          limit-access-to-actor: true
       - name: Start containers
         run: >-
           cd ${{ inputs.subdir }};
           sudo chown -R 9999:9999 .;
           docker-compose up -d web
-      - name: Check for and setup Solr if needed
-        shell: sh
-        run: |
-          cd ${{ inputs.subdir }};
-          if [ -d solr ]
-          then
-            docker-compose exec -T web sh -c \
-            "solrcloud-upload-configset.sh "${CONFDIR}" &&
-            SOLR_COLLECTION_NAME=hydra-test solrcloud-assign-configset.sh &&
-            solrcloud-assign-configset.sh"
-          else
-            echo "No solr directory found, skipping..."
-          fi
-      - name: Setup tmate session
-        uses: mxschmitt/action-tmate@v3
-        if: ${{ github.event_name == 'workflow_dispatch' && inputs.debug_enabled }}
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          limit-access-to-actor: true
       - name: Setup db
         run: >-
           cd ${{ inputs.subdir }};
