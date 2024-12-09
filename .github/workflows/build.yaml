@@ -36,7 +36,7 @@ on:
         type: string
 
 env:
-  REGISTRY: ${{ 'ghcr.io' }}
+  REGISTRY: ghcr.io
 
 jobs:
   build:
