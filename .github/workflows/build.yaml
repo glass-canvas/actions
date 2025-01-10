@@ -36,7 +36,7 @@ on:
         type: string
 
 env:
-  REGISTRY: ${{ inputs.image_registry || 'ghcr.io' }}
+  REGISTRY: ghcr.io
 
 jobs:
   build:
@@ -104,8 +104,8 @@ jobs:
         uses: docker/login-action@v2
         with:
           registry: ${{ env.REGISTRY }}
-          username: ${{ inputs.registry_user || github.actor }}
-          password: ${{ secrets.REGISTRY_PASSWORD || secrets.GITHUB_TOKEN }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
       - name: Load secret
         uses: 1password/load-secrets-action@v1
         with:
