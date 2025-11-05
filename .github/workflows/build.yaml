@@ -11,12 +11,12 @@ on:
         type: string
         description: "Docker image registry part. Defaults to ghcr.io"
       platforms:
-        default: "linux/amd64,linux/arm64"
+        default: "linux/amd64"
         type: string
       registry_user:
         type: string
       subdir:
-        default: '.'
+        default: "."
         type: string
       solr:
         description: "Use if you need to build a specific Solr image and push to the registry"
@@ -40,7 +40,7 @@ env:
 
 jobs:
   build:
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     steps:
       - id: setup
         name: Setup
@@ -67,16 +67,6 @@ jobs:
         if: ${{ github.event_name == 'workflow_dispatch' && inputs.debug_enabled }}
         with:
           limit-access-to-actor: true
-      - name: Install SSH client
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y openssh-client
-      - name: Append ARM buildx builder
-        uses: baschny/append-buildx-action@v1
-        with:
-          builder: ${{ steps.builder.outputs.name }}
-          endpoint: "ssh://ec2-user@10.0.6.48"
-          ssh_private_key: ${{ secrets.SSH_BESTIE_BUILDER_PRIVATE_KEY }}
       - name: Pull from cache to speed up build
         run: >-
           cd ${{ inputs.subdir }};
