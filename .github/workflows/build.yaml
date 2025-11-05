@@ -62,6 +62,10 @@ jobs:
         with:
           version: latest
           endpoint: builders
+      - name: Install SSH client
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y openssh-client
       - name: Append ARM buildx builder
         uses: baschny/append-buildx-action@v1
         with:
