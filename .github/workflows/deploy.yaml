@@ -26,7 +26,7 @@ env:
 
 jobs:
   deploy:
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     container:
       image: kiwigrid/gcloud-kubectl-helm:3.3.4-312.0.0-267
       options: --user root
@@ -50,7 +50,7 @@ jobs:
         run: |
           echo https://downloads.1password.com/linux/alpinelinux/stable/ >> /etc/apk/repositories &&
           wget https://downloads.1password.com/linux/keys/alpinelinux/support@1password.com-61ddfc31.rsa.pub -P /etc/apk/keys &&
-          apk update && 
+          apk update &&
           apk add 1password-cli
       - name: Setup tmate session
         uses: mxschmitt/action-tmate@v3
