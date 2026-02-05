@@ -28,7 +28,7 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     container:
-      image: kiwigrid/gcloud-kubectl-helm:3.3.4-312.0.0-267
+      image: kiwigrid/gcloud-kubectl-helm:3.11.1-421.0.0-1
       options: --user root
     environment: ${{ inputs.environment }}
     env:
